@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "OpenCode Go Usage",
+  "version": "0.2.0",
+  "description": "在浏览器工具栏一键查看 OpenCode Go 的 Token 用量与重置时间。",
+  "permissions": ["tabs", "cookies", "storage"],
+  "host_permissions": ["https://opencode.ai/*"],
+  "action": {
+    "default_title": "OpenCode Go Usage",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "assets/icon-16.png",
+      "32": "assets/icon-32.png",
+      "48": "assets/icon-48.png",
+      "128": "assets/icon-128.png"
+    }
+  },
+  "icons": {
+    "16": "assets/icon-16.png",
+    "32": "assets/icon-32.png",
+    "48": "assets/icon-48.png",
+    "128": "assets/icon-128.png"
+  }
+}

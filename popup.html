@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OpenCode Go Usage</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <main>
+      <!-- 顶栏：页面标题、更新时间与手动刷新按钮 -->
+      <header class="app-header">
+        <div class="app-heading">
+          <h1>OpenCode Go</h1>
+          <p>Token 用量</p>
+        </div>
+        <span id="updated-at" class="updated-at"></span>
+        <button id="refresh" class="refresh" type="button" title="刷新" aria-label="刷新">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M21 12a9 9 0 1 1-2.64-6.36M21 3v6h-6" />
+          </svg>
+        </button>
+      </header>
+
+      <!-- 用量卡片：状态指示 + 三项用量进度条 -->
+      <section class="usage-card" aria-label="Token 用量">
+        <div class="card-heading">
+          <h2>当前用量</h2>
+          <span id="status" class="status ok" role="status" aria-live="polite"></span>
+        </div>
+        <div id="usage-list" class="usage-list" aria-live="polite"></div>
+      </section>
+
+      <!-- 错误提示条：仅在加载失败时显示 -->
+      <div id="error" class="error" hidden>
+        <span id="error-message"></span>
+        <a id="error-link" href="https://opencode.ai/go" target="_blank" rel="noreferrer">前往 OpenCode Go ↗</a>
+      </div>
+
+    </main>
+    <script src="popup.js"></script>
+  </body>
+</html>
