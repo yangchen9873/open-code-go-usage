@@ -152,6 +152,10 @@ main {
   box-shadow: 0 8px 24px rgba(24, 32, 64, 0.06);
 }
 
+.usage-card + .usage-card {
+  margin-top: 12px;
+}
+
 .card-heading {
   display: flex;
   align-items: center;
@@ -163,6 +167,12 @@ main {
   color: var(--text-soft);
   font-size: 13px;
   font-weight: 600;
+}
+
+.card-subtitle {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 10px;
 }
 
 .status {
@@ -246,6 +256,22 @@ main {
 .usage-item small {
   color: var(--muted);
   font-size: 10.5px;
+}
+
+.usage-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 14px;
+}
+
+.usage-item.no-bar {
+  padding-bottom: 1px;
+}
+
+.usage-item.no-bar .usage-label strong {
+  color: var(--accent);
+  font-size: 16px;
 }
 
 /* Error */

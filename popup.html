@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>OpenCode Go Usage</title>
+    <title>AI 用量监控</title>
     <link rel="stylesheet" href="popup.css" />
   </head>
   <body>
@@ -11,8 +11,7 @@
       <!-- 顶栏：页面标题、更新时间与手动刷新按钮 -->
       <header class="app-header">
         <div class="app-heading">
-          <h1>OpenCode Go</h1>
-          <p>Token 用量</p>
+          <h1>LLM 用量概览</h1>
         </div>
         <span id="updated-at" class="updated-at"></span>
         <button id="refresh" class="refresh" type="button" title="刷新" aria-label="刷新">
@@ -22,20 +21,23 @@
         </button>
       </header>
 
-      <!-- 用量卡片：状态指示 + 三项用量进度条 -->
-      <section class="usage-card" aria-label="Token 用量">
+      <section class="usage-card" aria-label="OpenCode Go Token 用量">
         <div class="card-heading">
-          <h2>当前用量</h2>
-          <span id="status" class="status ok" role="status" aria-live="polite"></span>
+          <div><h2>OpenCode Go</h2><p class="card-subtitle">Token 用量</p></div>
+          <span id="status-opencode" class="status ok" role="status" aria-live="polite"></span>
         </div>
-        <div id="usage-list" class="usage-list" aria-live="polite"></div>
+        <div id="usage-list-opencode" class="usage-list" aria-live="polite"></div>
+        <div id="error-opencode" class="error" hidden><span id="error-message-opencode"></span><a href="https://opencode.ai/go" target="_blank" rel="noreferrer">打开用量页 ↗</a></div>
       </section>
 
-      <!-- 错误提示条：仅在加载失败时显示 -->
-      <div id="error" class="error" hidden>
-        <span id="error-message"></span>
-        <a id="error-link" href="https://opencode.ai/go" target="_blank" rel="noreferrer">前往 OpenCode Go ↗</a>
-      </div>
+      <section class="usage-card command-card" aria-label="Command Code GOAT 用量">
+        <div class="card-heading">
+          <div><h2>Command Code GOAT</h2><p class="card-subtitle">积分与窗口限制</p></div>
+          <span id="status-command" class="status ok" role="status" aria-live="polite"></span>
+        </div>
+        <div id="usage-list-command" class="usage-list" aria-live="polite"></div>
+        <div id="error-command" class="error" hidden><span id="error-message-command"></span><a href="https://commandcode.ai/" target="_blank" rel="noreferrer">打开 Command Code ↗</a></div>
+      </section>
 
     </main>
     <script src="popup.js"></script>
