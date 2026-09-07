@@ -1,10 +1,10 @@
 {
   "manifest_version": 3,
   "name": "AI 用量监控",
-  "version": "0.2.0",
-  "description": "在浏览器工具栏查看 OpenCode Go 与 Command Code GOAT 的用量。",
-  "permissions": ["tabs", "cookies", "storage"],
-  "host_permissions": ["https://opencode.ai/*", "https://commandcode.ai/*", "https://api.commandcode.ai/*"],
+  "version": "0.3.0",
+  "description": "在浏览器工具栏查看 OpenCode Go、Command Code GOAT 和 DeepSeek 的用量。",
+  "permissions": ["tabs", "cookies", "storage", "scripting"],
+  "host_permissions": ["https://opencode.ai/*", "https://commandcode.ai/*", "https://api.commandcode.ai/*", "https://*.deepseek.com/*"],
   "action": {
     "default_title": "AI 用量监控",
     "default_popup": "popup.html",

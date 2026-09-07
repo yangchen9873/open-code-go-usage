@@ -43,6 +43,45 @@ const providers = {
       return parseCommand(creditsData, subscriptionData);
     },
   },
+  deepseek: {
+    key: 'deepseek',
+    // DeepSeek 从页面 localStorage 读取 userToken
+    async getConfig() {
+      const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+      // 优先从当前标签页读取，如果不在 DeepSeek 页面则从缓存读取
+      let token = null;
+      if (tab?.url?.includes('deepseek.com')) {
+        try {
+          const results = await chrome.scripting.executeScript({
+            target: { tabId: tab.id },
+            func: () => {
+              const stored = localStorage.getItem('userToken');
+              return stored ? JSON.parse(stored).value : null;
+            }
+          });
+          token = results?.[0]?.result;
+          if (token) await chrome.storage.local.set({ deepseekToken: token });
+        } catch (e) {
+          // 如果执行失败，尝试从缓存读取
+        }
+      }
+      if (!token) ({ deepseekToken: token } = await chrome.storage.local.get('deepseekToken'));
+      if (!token) throw Error('未找到 DeepSeek 登录信息，请先打开 DeepSeek 页面');
+      return { token };
+    },
+    // DeepSeek 返回余额信息
+    async loadUsage({ token }) {
+      const response = await fetch('https://platform.deepseek.com/api/v0/users/get_user_summary', {
+        headers: {
+          'accept': '*/*',
+          'authorization': `Bearer ${token}`
+        }
+      });
+      if (!response.ok) throw Error(response.status === 401 || response.status === 403 ? '登录状态已失效，请重新登录' : `请求失败（${response.status}）`);
+      const data = await response.json();
+      return parseDeepSeek(data);
+    },
+  },
 };
 
 const refreshButton = document.querySelector('#refresh');
@@ -172,6 +211,24 @@ function parseCommand(creditsData, subscriptionData) {
 }
 
 /**
+ * 解析 DeepSeek 余额接口响应。
+ * @param {Object} data DeepSeek get_user_summary 接口返回对象
+ * @returns {Array<Object>} 卡片用量项目
+ */
+function parseDeepSeek(data) {
+  const bizData = data?.data?.biz_data;
+  if (!bizData) throw Error('接口返回格式异常');
+
+  const normalBalance = Number(bizData.normal_wallets?.[0]?.balance || 0);
+  const bonusBalance = Number(bizData.bonus_wallets?.[0]?.balance || 0);
+  const totalBalance = normalBalance + bonusBalance;
+
+  return [
+    { label: '💰 账户余额', valueText: `¥${totalBalance.toFixed(2)}`, noBar: true },
+  ];
+}
+
+/**
  * 加载并渲染单个 provider。
  * @param {Object} provider provider 配置
  * @returns {Promise<void>} 加载完成后的异步任务
@@ -201,4 +258,34 @@ async function refresh() {
 }
 
 refreshButton.addEventListener('click', refresh);
+
+// 折叠卡片功能
+document.querySelectorAll('.toggle-btn').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const cardKey = btn.dataset.card;
+    const card = btn.closest('.usage-card');
+    card.classList.toggle('collapsed');
+
+    // 保存折叠状态到 storage
+    const storageKey = `card-collapsed-${cardKey}`;
+    const isCollapsed = card.classList.contains('collapsed');
+    await chrome.storage.local.set({ [storageKey]: isCollapsed });
+  });
+});
+
+// 恢复折叠状态
+async function restoreCollapsedStates() {
+  const keys = ['opencode', 'command', 'deepseek'].map(k => `card-collapsed-${k}`);
+  const states = await chrome.storage.local.get(keys);
+
+  keys.forEach(key => {
+    const cardKey = key.replace('card-collapsed-', '');
+    const card = document.querySelector(`[data-card="${cardKey}"]`)?.closest('.usage-card');
+    if (card && states[key]) {
+      card.classList.add('collapsed');
+    }
+  });
+}
+
+restoreCollapsedStates();
 refresh();

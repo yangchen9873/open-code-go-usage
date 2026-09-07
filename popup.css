@@ -169,6 +169,52 @@ main {
   font-weight: 600;
 }
 
+.card-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toggle-btn {
+  display: grid;
+  flex: none;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  place-items: center;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.toggle-btn svg {
+  width: 12px;
+  height: 12px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.5;
+  transition: transform 0.2s ease;
+}
+
+.toggle-btn:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.usage-card.collapsed .toggle-btn svg {
+  transform: rotate(-90deg);
+}
+
+.usage-card.collapsed .usage-list,
+.usage-card.collapsed .error {
+  display: none;
+}
+
 .card-subtitle {
   margin: 2px 0 0;
   color: var(--muted);

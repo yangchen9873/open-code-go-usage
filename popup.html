@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AI 用量监控</title>
     <link rel="stylesheet" href="popup.css" />
+    <style>
+      html, body {
+        min-height: fit-content;
+        height: auto;
+      }
+    </style>
   </head>
   <body>
     <main>
@@ -24,7 +30,14 @@
       <section class="usage-card" aria-label="OpenCode Go Token 用量">
         <div class="card-heading">
           <div><h2>OpenCode Go</h2></div>
-          <span id="status-opencode" class="status ok" role="status" aria-live="polite"></span>
+          <div class="card-controls">
+            <span id="status-opencode" class="status ok" role="status" aria-live="polite"></span>
+            <button class="toggle-btn" data-card="opencode" type="button" title="折叠/展开" aria-label="折叠展开">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </button>
+          </div>
         </div>
         <div id="usage-list-opencode" class="usage-list" aria-live="polite"></div>
         <div id="error-opencode" class="error" hidden><span id="error-message-opencode"></span><a href="https://opencode.ai/go" target="_blank" rel="noreferrer">打开用量页 ↗</a></div>
@@ -33,10 +46,33 @@
       <section class="usage-card command-card" aria-label="Command Code GOAT 用量">
         <div class="card-heading">
           <div><h2>Command Code GOAT</h2></div>
-          <span id="status-command" class="status ok" role="status" aria-live="polite"></span>
+          <div class="card-controls">
+            <span id="status-command" class="status ok" role="status" aria-live="polite"></span>
+            <button class="toggle-btn" data-card="command" type="button" title="折叠/展开" aria-label="折叠展开">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </button>
+          </div>
         </div>
         <div id="usage-list-command" class="usage-list" aria-live="polite"></div>
         <div id="error-command" class="error" hidden><span id="error-message-command"></span><a href="https://commandcode.ai/" target="_blank" rel="noreferrer">打开 Command Code ↗</a></div>
+      </section>
+
+      <section class="usage-card" aria-label="DeepSeek 余额">
+        <div class="card-heading">
+          <div><h2>DeepSeek</h2></div>
+          <div class="card-controls">
+            <span id="status-deepseek" class="status ok" role="status" aria-live="polite"></span>
+            <button class="toggle-btn" data-card="deepseek" type="button" title="折叠/展开" aria-label="折叠展开">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div id="usage-list-deepseek" class="usage-list" aria-live="polite"></div>
+        <div id="error-deepseek" class="error" hidden><span id="error-message-deepseek"></span><a href="https://platform.deepseek.com/" target="_blank" rel="noreferrer">打开 DeepSeek ↗</a></div>
       </section>
 
     </main>
