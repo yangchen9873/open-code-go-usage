@@ -32,9 +32,15 @@ const providers = {
     },
     // Command Code 返回标准 JSON，直接转换为窗口和积分数据。
     async loadUsage() {
-      const response = await fetch('https://api.commandcode.ai/internal/billing/credits', { credentials: 'include', headers: { accept: '*/*' } });
-      if (!response.ok) throw Error(response.status === 401 || response.status === 403 ? '登录状态已失效，请重新登录' : `请求失败（${response.status}）`);
-      return parseCommand(await response.json());
+      const [creditsResponse, subscriptionResponse] = await Promise.all([
+        fetch('https://api.commandcode.ai/internal/billing/credits', { credentials: 'include', headers: { accept: '*/*' } }),
+        fetch('https://api.commandcode.ai/internal/billing/subscriptions?withPending=true', { credentials: 'include', headers: { accept: '*/*' } }),
+      ]);
+      if (!creditsResponse.ok) throw Error(creditsResponse.status === 401 || creditsResponse.status === 403 ? '登录状态已失效，请重新登录' : `请求失败（${creditsResponse.status}）`);
+      if (!subscriptionResponse.ok) throw Error(subscriptionResponse.status === 401 || subscriptionResponse.status === 403 ? '登录状态已失效，请重新登录' : `请求失败（${subscriptionResponse.status}）`);
+      const creditsData = await creditsResponse.json();
+      const subscriptionData = await subscriptionResponse.json();
+      return parseCommand(creditsData, subscriptionData);
     },
   },
 };
@@ -141,19 +147,27 @@ function parseOpenCode(text) {
 
 /**
  * 解析 Command Code credits 接口响应。
- * @param {Object} data 接口返回对象
+ * @param {Object} creditsData credits 接口返回对象
+ * @param {{data?: {currentPeriodEnd?: string}}} subscriptionData subscriptions 接口返回对象
  * @returns {Array<Object>} 卡片用量项目
  */
-function parseCommand(data) {
-  const windows = data?.windowLimits;
-  const credits = data?.credits;
+function parseCommand(creditsData, subscriptionData) {
+  const windows = creditsData?.windowLimits;
+  const credits = creditsData?.credits;
   if (!windows?.fiveHour || !windows?.weekly || !credits) throw Error('接口返回格式异常');
   const fiveHourPercent = windows.fiveHour.used / windows.fiveHour.cap * 100;
   const weeklyPercent = windows.weekly.used / windows.weekly.cap * 100;
+  // 月度窗口：总额固定为 70，已使用量从积分余额计算
+  const monthlyCap = 70;
+  const monthlyUsed = monthlyCap - Number(credits.monthlyCredits);
+  const monthlyPercent = monthlyUsed / monthlyCap * 100;
+  // 获取月度重置时间（转换为毫秒时间戳）
+  const periodEnd = subscriptionData?.data?.currentPeriodEnd;
+  const monthlyResetAt = periodEnd ? new Date(periodEnd).getTime() : null;
   return [
     { label: '⏱ 5 小时窗口', usagePercent: fiveHourPercent, valueText: `${fiveHourPercent.toFixed(1)}%`, detail: formatResetAt(windows.fiveHour.resetAt), detailRight: `${windows.fiveHour.used.toFixed(2)} / ${windows.fiveHour.cap}` },
     { label: '📅 每周窗口', usagePercent: weeklyPercent, valueText: `${weeklyPercent.toFixed(1)}%`, detail: formatResetAt(windows.weekly.resetAt), detailRight: `${windows.weekly.used.toFixed(2)} / ${windows.weekly.cap}` },
-    { label: '✦ 月度积分余额', noBar: true, valueText: Number(credits.monthlyCredits).toFixed(2) },
+    { label: '🗓️ 月度窗口', usagePercent: monthlyPercent, valueText: `${monthlyPercent.toFixed(1)}%`, detail: formatResetAt(monthlyResetAt), detailRight: `${monthlyUsed.toFixed(2)} / ${monthlyCap}` },
   ];
 }
 
